@@ -247,4 +247,60 @@ print(stk.pop())
 print(stk.peek())
 
 
+# 顺时针打印矩阵，但是没办法处理特殊情况
+# 类似于 row,1 这样的， 需要单独处理
+def printMatrixEdges(arr):
+    
+    def print_box(a, d, r):
+        for j in range(a, d): # 上边第一行
+            res.append(arr[a][j])
+        for i in range(a, r): # 右边第一列
+            res.append(arr[i][d])
+        for j in range(d, a, -1): # 下边第一列
+            res.append(arr[r][j])
+        for i in range(r, a, -1): # 左边第一列
+            res.append(arr[i][a]) 
+        if a == d == r:
+            res.append(arr[a][d]) 
+
+    
+    if not arr:
+        return []
+    res = []
+    r = len(arr)
+    a, d = 0, len(arr[0])-1
+    while a<r:
+        print_box(a, d, r-1)
+        a += 1
+        d -= 1
+        r -= 1
+    return res
+    
+arr = [[ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ],[ 13, 14, 15, 16 ]]
+printMatrixEdges(arr) 
+arr = [[ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ]]
+printMatrixEdges(arr) 
+arr = [[ 1, 2,], [ 4, 5], [ 7, 8]]
+printMatrixEdges(arr) 
+arr = [[ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ],[ 10, 11, 12 ]]
+printMatrixEdges(arr)  
+arr = [[ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ]]
+printMatrixEdges(arr) 
+arr = [[5]]
+
+
+# 技巧性的做法：
+def printMatrixEdges(arr):
+    res = []
+    while arr:
+        res.extend(arr[0])
+        arr = list(zip(*arr[1:]))[::-1]
+    return res
+
+def printMatrixEdges(matrix):
+    return matrix and list(matrix.pop(0)) + printMatrixEdges(list(zip(*matrix))[::-1])
+printMatrixEdges(arr)
+
+
+
 
