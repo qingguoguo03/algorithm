@@ -249,9 +249,18 @@ print(stk.peek())
 
 # 顺时针打印矩阵，但是没办法处理特殊情况
 # 类似于 row,1 这样的， 需要单独处理
-def printMatrixEdges(arr):
+def printMatrixEdges(arr):  # 主要就是扣边界
     
     def print_box(a, d, r):
+        
+        if a == r: # 就只有一行
+            for j in range(a, d+1):
+                res.append(arr[a][j])
+            return
+        if d == a: # 表示只有一列:
+            for i in range(a, r+1):
+                res.append(arr[i][d])
+            return
         for j in range(a, d): # 上边第一行
             res.append(arr[a][j])
         for i in range(a, r): # 右边第一列
@@ -260,17 +269,14 @@ def printMatrixEdges(arr):
             res.append(arr[r][j])
         for i in range(r, a, -1): # 左边第一列
             res.append(arr[i][a]) 
-        if a == d == r:
-            res.append(arr[a][d]) 
-
-    
+        
     if not arr:
         return []
     res = []
-    r = len(arr)
+    r = len(arr)-1
     a, d = 0, len(arr[0])-1
-    while a<r:
-        print_box(a, d, r-1)
+    while a<=r and d>=0 and a<=d: # 细节，限制条件
+        print_box(a, d, r)
         a += 1
         d -= 1
         r -= 1
@@ -286,7 +292,14 @@ arr = [[ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ],[ 10, 11, 12 ]]
 printMatrixEdges(arr)  
 arr = [[ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ]]
 printMatrixEdges(arr) 
+arr = [[1,11],[2,12],[3,13],[4,14],[5,15],[6,16],[7,17],[8,18],[9,19],[10,20]]
+arr = []
+arr = [[]]
+arr = [[5, 6, 7]]
 arr = [[5]]
+arr = [[5], [6]]
+arr = [[5], [6], [7]]
+arr = [[1],[2],[3],[4],[5],[6],[7],[8],[9],[10]]
 
 
 # 技巧性的做法：
@@ -300,6 +313,66 @@ def printMatrixEdges(arr):
 def printMatrixEdges(matrix):
     return matrix and list(matrix.pop(0)) + printMatrixEdges(list(zip(*matrix))[::-1])
 printMatrixEdges(arr)
+
+# leet上看到扣边界写的比较简洁的，也就是 a d r 用四个变量代替，会更加清楚
+ def spiralOrder(self, matrix: 'List[List[int]]') -> 'List[int]':
+        if matrix == []:
+            return []
+        result = []
+        left, up = 0,0 # 右移 下移
+        right =len(matrix[0])-1
+        down = len(matrix)-1
+        direct = 0 #0:right, 1:down, 2:left， 3:up
+        while True:
+            if direct == 0: #第一行打印完 下移一行
+                for i in range(left, right+1):
+                    result.append(matrix[up][i])
+                up+=1
+            if direct == 1: # 右边第一行打印完 ，左移
+                for i in range(up, down+1):
+                    result.append(matrix[i][right])
+                right -= 1
+            if direct == 2: # 下边第一行打印完，上移
+                for i in range(right,left-1,-1):
+                    result.append(matrix[down][i])
+                down-=1
+            if direct == 3: # 左边第一行打印完，右移
+                for i in range(down,up-1,-1):
+                    result.append(matrix[i][left])
+                left+=1
+            if up>down or left>right: # 边界条件
+                return result
+            direct = (direct+1)%4    
+
+
+# 矩阵顺时针旋转90度 leet上也有比较有技巧的做法
+
+def rotateMatrix(arr):
+ 
+    arr[:] = [list(item) for item in list(zip(*arr[::-1]))]
+
+
+arr = [[ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ]]
+arr = [[ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ],[ 13, 14, 15, 16 ]]
+rotateMatrix(arr)
+print(arr)
+
+# 扣边界做, 主要就是旋转赋值的问题
+
+def rotateMatrix(arr):
+    
+    def change_box(left, right, r, l):
+        for j in range(left, right):
+            arr[left][j], arr[r-j][left], arr[r-left][l-j], arr[j][l-left] = arr[r-j][left], arr[r-left][l-j], arr[j][r-left], arr[left][j]
+    
+    left, right = 0, len(arr)-1
+    r = l = right
+    while left<right:
+        change_box(left, right, r, l)
+        left += 1
+        right -= 1
+rotateMatrix(arr)
+print(arr)
 
 
 
