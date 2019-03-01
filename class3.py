@@ -383,3 +383,159 @@ print(pre_str)
 h = reconByPreString(pre_str)
 pre_str = serialByPre(h)   
 print(pre_str) 
+
+
+def serialByLevel2(head):
+    # 用队列处理即可, 在这个之前应该获得最大的深度，循环截至点
+    if not head:
+        return None
+    import queue
+    values = queue.Queue()
+    res = []
+    def get_max_len(head):
+        if not head:
+            return 0
+        return 1 + max(get_max_len(head.left), get_max_len(head.right))
+    max_len = get_max_len(head)+1
+    nums = 2**max_len-1
+    values.put(head)
+    while not values.empty() and len(res)<nums:
+        head = values.get(block=False)
+        if not head:
+            res.append('#') # 去掉就是视频的层次划分
+            #values.put(None)
+            #values.put(None)
+        else:
+            res.append(str(head.val))
+            if head.left:
+                values.put(head.left)
+            else:
+                values.put(None)
+            if head.right:
+                values.put(head.right)
+            else:
+                values.put(None)
+    return '_'.join(res)
+
+def serialByLevel1(head):
+    # 视频中的方法 和我理解的不一样，相当于#只占位有数字的前面
+    if not head:
+        return None
+    res = str(head.val) +  '_'
+    import queue
+    values = queue.Queue()
+    values.put(head)
+    while not values.empty():
+        head = values.get(block=False)
+        if head.left:
+            res += str(head.left.val) + '_'
+            values.put(head.left)
+        else:
+            res += '#_'
+        if head.right:
+            res += str(head.right.val) + '_'
+            values.put(head.right)
+        else:
+            res += '#_'
+    return res
+        
+def reconByByLevel2(pre_str):
+    # 也是用队列来接就好
+    import queue
+    q = queue.Queue()
+    values = [s for s in pre_str.split('_') if s]
+    h = LeftRightNode(int(values[0]))
+    q.put(h)
+    i = 1
+    while not q.empty():
+        head = q.get(block=False)
+        if values[i] != '#':
+            head.left = LeftRightNode(int(values[i]))
+            q.put(head.left)
+        i += 1
+        if values[i] != '#':
+            head.right = LeftRightNode(int(values[i]))
+            q.put(head.right)
+        i += 1
+    return h
+     
+def reconByByLevel1(pre_str):
+    # 视频也是用队列来接，但是代码看上去简洁，就是把产生node部分提出去了
+    import queue
+    q = queue.Queue()
+    values = [s for s in pre_str.split('_') if s]
+    h = LeftRightNode(int(values[0]))
+    q.put(h)
+    i = 1
+    def generateNone(value):
+        if value == '#':
+            return None
+        else:
+            return LeftRightNode(int(values[i]))
+        
+    while not q.empty():
+        head = q.get(block=False)
+        head.left = generateNone(values[i])
+        if head.left:
+            q.put(head.left)
+        i += 1
+        head.right = generateNone(values[i])
+        if head.right:
+            q.put(head.right)
+        i += 1
+    return h            
+    
+
+
+pre_str = serialByPre(head[0])
+print(pre_str)
+# 先序遍历用队列 注意公式细节
+h = reconByPreString(pre_str)
+pre_str = serialByPre(h)   
+print(pre_str)        
+        
+# 在head末尾在添加一个node
+head[-1].left = LeftRightNode(12)
+head[-1].right = LeftRightNode(13)
+pre_str = serialByPre(head[0])
+print(pre_str)
+# 先序遍历用队列 注意公式细节
+h = reconByPreString(pre_str)
+pre_str = serialByPre(h)   
+print(pre_str) 
+
+# 按层进行序列化
+pre_str = serialByLevel1(head[0])
+print(pre_str)
+pre_str = serialByLevel2(head[0])
+print(pre_str)
+# 层次反序列化
+h = reconByByLevel2(pre_str) 
+pre_str = serialByLevel2(h)  
+print(pre_str) 
+h = reconByByLevel1(pre_str) 
+pre_str = serialByLevel1(h)  
+print(pre_str) 
+
+
+# 折纸问题的解决
+# 耦合性问题 从中间开始往左右 两边折痕是相反的
+# 每增加新的一层，就是 下上 下上 下上的增加 可以看做是二叉树的新一层
+# 头结点是下 左子树是下 右子树是上 （耦合）
+# 从上往下打印就是打印二叉树的中序遍历即可
+def printFold(N):
+    #方向其实可以直接用 up 或者 down 来做
+    def printFoldByLevel(i, N, direction):
+        if i>N: # 全部打印
+            return
+        printFoldByLevel(i+1, N, True)
+        print('down' if direction else 'up')
+        printFoldByLevel(i+1, N, False)
+    return printFoldByLevel(1, N, True)
+N = 4
+printFold(N)
+
+
+# 判断二叉树是否平衡
+# 
+
