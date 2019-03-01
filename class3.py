@@ -287,4 +287,99 @@ print(getSucessNode(h1).val)
 
 
 # 二叉树的序列化与反序列化
+# 二叉树的序列化与反序列
+# 对三种遍历进行操作 另外节点处没有左子树或者右子树  要有占位符
+# 按层遍历
+class LeftRightNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
 
+head = [LeftRightNode(i) for i in [5,3,8,2,4,1,7,6,10,9,11]]       
+for i in range(1, len(head)):
+    if not(i % 2): 
+        head[int((i-2)/2)].right = head[i]
+    else:
+        head[int((i-1)/2)].left = head[i]
+        
+# 递归版的序列化
+def serialByPre(head):
+    # '_' 下划线是为了后面好切分
+    if not head: 
+        return '#_' 
+    res = str(head.val) + '_'
+    res += serialByPre(head.left)
+    res += serialByPre(head.right)
+    return res
+
+class Node(object):
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+        self.parent = None
+
+        
+def reconByPreString1(pre_str):
+    # 反序列的话 用两个指针，一个表示走过 一个表当前的头，用栈来压
+    stack = ArrayStack()
+    values = [s for s in pre_str.split('_') if s]
+    h = head = LeftRightNode(int(values[0]))
+    stack.push(head)
+    i = 1
+    while stack.peek() and i<len(values):
+        c = stack.peek()
+        if values[i] != '#':
+            if c.right != head and c.left != head: # 父节点两边子树都没走过
+                tmp = LeftRightNode(int(values[i]))
+                stack.push(tmp)
+                c.left = tmp
+                i += 1
+            elif c.left == head: # 右子树没有走过
+                tmp = LeftRightNode(int(values[i]))
+                stack.push(tmp)
+                c.right = tmp
+                i += 1
+            else: # 表示这个节点走过了
+                head = stack.pop()
+        else: # values[i] == '#'
+            i += 1
+            if values[i] == '#': # 叶节点
+                head = stack.pop()
+                i += 1
+    return h
+
+def reconByPreString2(pre_str):
+    # 视频中用的是递归的方法，然后使用队列 先进先出进行反序列的
+    import queue
+    values = queue.Queue()
+    {values.put(s) for s in pre_str.split('_') if s}
+    
+    def make_node(values):
+        value = values.get(block=False)
+        if value == '#':
+            return None
+        head = LeftRightNode(int(value))
+        head.left = make_node(values)
+        head.right = make_node(values)
+        return head
+    return make_node(values)
+
+
+pre_str = serialByPre(head[0])
+print(pre_str)
+# 先序遍历用队列 注意公式么么
+h = reconByPreString(pre_str)
+pre_str = serialByPre(h)   
+print(pre_str)        
+        
+# 在head末尾在添加一个node
+head[-1].left = LeftRightNode(12)
+head[-1].right = LeftRightNode(13)
+pre_str = serialByPre(head[0])
+print(pre_str)
+# 先序遍历用队列 注意公式么么
+h = reconByPreString(pre_str)
+pre_str = serialByPre(h)   
+print(pre_str) 
