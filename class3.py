@@ -537,5 +537,120 @@ printFold(N)
 
 
 # 判断二叉树是否平衡
-# 
+# 视频中这个二叉树只强调左子树右子树的高度差在1之内即可
+# 这里返回的是元祖，如果别的语言不能返回多个的话，可以传入list来接受多个返回值
+def isBalancedTree(head):
+
+    def getHeight(head, level):
+        if not head:
+            return level, True
+        leftH, lflag = getHeight(head.left, level+1)
+        rightH, rflag = getHeight(head.right, level+1)
+        if abs(leftH-rightH)>1:
+            return level, False
+        return max(leftH, rightH), True
+    
+    h, flag = getHeight(head, 1)
+    return h-1 if flag else 0
+    
+head = [LeftRightNode(i) for i in [1,2,3,4,5,6,7,8]]       
+for i in range(1, len(head)):
+    if not(i % 2): 
+        head[int((i-2)/2)].right = head[i]
+    else:
+        head[int((i-1)/2)].left = head[i]
+isBalancedTree(head[0])
+head[-3].left = LeftRightNode(10)
+head[-3].right = LeftRightNode(11)
+isBalancedTree(head[0])
+
+# 判断一棵树是否是BST
+def isBST(head):
+    # 搜索二叉树 父节点的值要在左子树与右子树的中间,不存在重复的值
+    # 这个是有问题的，要保证所有节点左子树所有数都要小于右边的所有数 节点值在中间的
+    if not head:
+        return True    
+    if head.left and head.val<head.left.val:
+        return False
+    else:
+        flag = isBST(head.left)
+
+    if not flag:
+        return False
+    
+    if head.right and head.val>head.right.val:
+        return False
+    else:
+        return isBST(head.right)
+
+    return isBST(head)
+
+# 做法一直接就是中序遍历的递归版本 然后打印出来是升序顺序即可
+
+# leet上也有一道题，但是可以有等号的存在，因此要修正一下
+class Solution:
+    # 写的不是很简洁 思路就是每次遍历的时候记录子树的最大值，最小值，最后传到上个节点的时候要根据左子树，右子树进行不同的赋值
+    def isValidBST(self, root: TreeNode) -> bool:
+        head = root
+        if not head:
+            return True
+        def isbst(head):
+            import math
+            # 每棵树都保存左子树，右子树的最大值与最小值
+            res = [-math.inf, math.inf, -math.inf, math.inf, True]
+            if not res[-1]:
+                return res
+            if head.left and (head.val<=head.left.val): 
+                res[-1] = False
+            else:
+                if head.left: # 存在左子树，返回左子树的最大值
+                    tmp = isbst(head.left)
+                    res[0], res[1], res[-1] = tmp[0], tmp[1], tmp[-1]
+                else:
+                    res[0] = max(head.val, res[0]) # 记录左子树的最大最小值
+                    res[1] = min(head.val, res[1])
+
+            if not res[-1]: # 左子树就不符合了
+                return res
+
+            if head.right and head.val>=head.right.val:
+                res[-1] = False
+            else:
+                if head.right:
+                    tmp = isbst(head.right)
+                    res[2:] = tmp[2:]
+                else:
+                    res[2] = max(head.val, res[2]) # 记录右子树的最大最小值
+                    res[3] = min(head.val, res[3])
+            if not res[-1]:
+                return res
+            if  (head.right and res[3] <= head.val)  or (head.left and head.val <= res[0]): # 节点小于左子树的最大值 大于右子树的最小值
+                # 存在等号的时候 这里就是比较细节的地方，只有存在左右子树，才会做的判断
+                res[-1] = False
+            else: # 对子树进行合并 找到子树的最大值与最小值
+                res[0] = res[2] = max(res[0], res[2])
+                res[1] = res[3] = min(res[1], res[3])
+            return res
+
+        return isbst(head)[-1]
+head = [LeftRightNode(i) for i in [3,2,5,1,4]] #   
+head = [LeftRightNode(i) for i in [4,2,8,1,3,5,9]]   
+head = [LeftRightNode(i) for i in [1,1]] #
+head = [LeftRightNode(i) for i in [2,1,3]] 
+head = [LeftRightNode(i) for i in [0,-1]] 
+for i in range(1, len(head)):
+    if not(i % 2): 
+        head[int((i-2)/2)].right = head[i]
+    else:
+        head[int((i-1)/2)].left = head[i]
+head[-1].left = LeftRightNode(7)
+head[-1].right = LeftRightNode(11)
+isBST(head[0])
+
+
+
+    
+
+
+
 
