@@ -764,17 +764,20 @@ def getHeight(head):
     else:
         return False, llen
 def completeTreeNums(head):
+    nums = 0
     if not head:
-        return 0
+        return nums
     
-    nums = 1
+    #nums = 1 不用赋值1了 后面都要减掉的 直接就0就好
     flag, res = getHeight(head.left)
     
     if not flag:
-        nums += 2**(res-1)-1
+        #nums += 2**(res-1)-1
+        nums += 2**(res-1)
         nums += completeTreeNums(head.left)
     else:
-        nums += 2**res-1
+        #nums += 2**res-1
+        nums += 2**res
         nums += completeTreeNums(head.right)
     return nums
 
