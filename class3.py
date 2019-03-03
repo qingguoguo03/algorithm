@@ -648,9 +648,142 @@ head[-1].right = LeftRightNode(11)
 isBST(head[0])
 
 
+#这个方法还是比较有技巧性的 但是总体效率应该也没那么高
+def isBST1(head):
+    # 视频里面用的这个方法很有技巧，也没有介绍，仔细才能看懂，思想如下：
+    # 1. 每次父节点的值挂在左子树的最右的节点下，然后左子树每个右节点都挂着父节点
+    # 2. 当左子树为空时，就可以判断父节点与右节点的关系，然后将节点转为右节点（回到了父节点的父节点）
+    # 3. 重新又开始挂左子树的右节点 此时已经挂着了父节点 则还原为null
+    # 4. 父节点 赋值为 父节点的父节点， 右节点（原来父节点的父节点 转到右子树上 重新做循环)
+    if not head:
+        return True
+    cur1 = head
+    pre = None
+    while cur1:
+        cur2 = cur1.left
+        if cur2:
+            while cur2.right and cur2.right != cur1: # 说明还没有挂过父节点
+                cur2 = cur2.right
+            if not cur2.right: # 挂上父节点
+                cur2.right = cur1
+                cur1 = cur1.left
+                continue # 先把每颗左子树的右节点都挂满父节点
+            else: # 说明已经挂过 做过判断 还原
+                cur2.right = None
+        
+        if pre and pre.val>cur1.val:
+            return False
+        pre = cur1 # 子节点
+        cur1 = cur1.right # 父节点
+        continue
+    return True
 
+head = [LeftRightNode(i) for i in [3,2,5,1,4]] #   
+head = [LeftRightNode(i) for i in [4,2,8,1,3,5,9]]   
+head = [LeftRightNode(i) for i in [1,1]] #
+head = [LeftRightNode(i) for i in [2,1,3]] 
+head = [LeftRightNode(i) for i in [0,-1]] 
+for i in range(1, len(head)):
+    if not(i % 2): 
+        head[int((i-2)/2)].right = head[i]
+    else:
+        head[int((i-1)/2)].left = head[i]
+head[-1].left = LeftRightNode(7)
+head[-1].right = LeftRightNode(11)
+isBST1(head[0])
+
+# 判断一棵树是否是平衡二叉树
+def isCBT1(head):
+    # 判断一棵树是否是CBT：
+    # 按照层次进行遍历，设置flag判断节点是否开启，开启之后，每个点不能包含叶子节点了
+    if not head:
+        return True
+    leaf = False
+    import queue
+    q = queue.Queue()
+    q.put(head)
+    while not q.empty():
+        head = q.get(block=False)
+        if (leaf and (head.left or head.right)) or ((not head.left) and head.right):
+            return False
+        if head.left:
+            q.put(head.left)
+#        else:
+#            leaf = True
+        if head.right:
+            q.put(head.right)
+        else:
+            leaf = True
+    return True
+
+# 再简化一点就是只管加入None 当节点变成None 后面的节点就不可以是None，否则就是False
+def isCBT2(head):
+    if not head:
+        return True
+    import queue
+    q = queue.Queue()
+    q.put(head)
+    flag = False
+    while not q.empty():
+        head = q.get(block=False)
+        if flag and head:
+            return False
+        if not head:
+            flag = True
+            continue
+        q.put(head.left)
+        q.put(head.right)
+    return True
+        
+head = [LeftRightNode(i) for i in [1,2,3,4,5,6]]
+for i in range(1, len(head)):
+    if not(i % 2): 
+        head[int((i-2)/2)].right = head[i]
+    else:
+        head[int((i-1)/2)].left = head[i]   
+isCBT2(head[0])   
+
+# 判断完全二叉树的叶子个数，思想:
+# 1. 如果左子树的深度 等于 右子树的深度 是满二叉树
+# 2. 如果左子树不是满二叉树 则右子树的节点数可以算出
+# 3. 递归进去左子树 母子同样的问题
+def getHeight(head):
+    if not head:
+        return True, 0
+    h = head
+    llen = rlen = 1
+    while head.left:
+        head = head.left
+        llen += 1
+    head = h
+    while head.right:
+        head = head.right
+        rlen += 1
+    if llen == rlen:
+        return True, llen
+    else:
+        return False, llen
+def completeTreeNums(head):
+    if not head:
+        return 0
     
+    nums = 1
+    flag, res = getHeight(head.left)
+    
+    if not flag:
+        nums += 2**(res-1)-1
+        nums += completeTreeNums(head.left)
+    else:
+        nums += 2**res-1
+        nums += completeTreeNums(head.right)
+    return nums
 
-
+head = [LeftRightNode(i) for i in [1,2,3,4,5,6,7,8,9]]
+for i in range(1, len(head)):
+    if not(i % 2): 
+        head[int((i-2)/2)].right = head[i]
+    else:
+        head[int((i-1)/2)].left = head[i]   
+completeTreeNums(head[0])     
 
 
