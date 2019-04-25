@@ -37,7 +37,7 @@ class Solution:
         if n <= 1:
             return 1
         return self.climbStairs(n-1) + self.climbStairs(n-2)
-# 上面这种方法会超时,改成动态规划来做
+# 上面这种方法会超时,改成动态规划来做：斐波那契数列的感觉
 class Solution:
     def climbStairs(self, n: int) -> int:
         # b缓存未来的楼梯数量
@@ -48,3 +48,32 @@ class Solution:
     
 
 
+# 打印子序列的所有子集 考虑该字符是否 0 1 进行操作
+    
+def printSets(s, res, i):
+    if i+1 > len(s):
+        return
+    tmp = [item+s[i] for item in res] # 加上字符
+    res.extend(tmp)
+    printSets(s, res, i+1)
+    return
+    
+res = ['']
+s = 'abc'
+printSets(s, res, 0)
+print(res)
+
+
+# leet上一道类似的题目，
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        res = [[]]
+        def dfs(nums, i, res):
+            if i == len(nums):
+                return res
+            res.extend([item+[nums[i]] for item in res]) # 主要这里别写成死循环
+            dfs(nums, i+1, res) 
+        dfs(nums, 0, res)
+        return res
+
+    
