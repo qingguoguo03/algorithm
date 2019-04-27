@@ -76,4 +76,80 @@ class Solution:
         dfs(nums, 0, res)
         return res
 
+   
+# 一个栈，利用递归实现逆序
+class ArrayStack(object):
     
+    def __init__(self):
+        self.arr = []
+        self.size = 0
+        self.arr_len = 0
+        
+    def push(self, num):
+        try:
+            self.arr[self.size] = num
+        except:
+            self.arr.append(num)
+        self.size += 1
+        
+            
+    def pop(self): # 删除在这个值，size减1
+        if self.size:
+            self.size -= 1
+            return self.arr[self.size]
+        else:
+            raise Exception('栈中没有数')
+            
+    def peek(self):
+        if self.size:
+            return self.arr[self.size-1]
+        else:
+            return None
+
+def get_last_num(stack):
+    
+    if stack.size == 1:
+        print(stack.pop())
+        return
+    if stack.peek():  
+       num = stack.pop()
+       get_last_num(stack)
+       stack.push(num)
+
+stack = ArrayStack()
+for i in range(1,8):
+    stack.push(i)
+while stack.peek():
+    get_last_num(stack)
+    
+
+# 如果逆序存储下来的话
+
+def get_last_num(stack):
+    
+    if stack.size==1:
+        return stack.pop()
+    if stack.peek():
+        num = stack.pop()
+        last = get_last_num(stack)
+        stack.push(num)
+    return last
+
+def reverse(stack):
+    
+    if not stack.peek():
+        return None
+    
+    last = get_last_num(stack)
+    reverse(stack)
+    stack.push(last)
+       
+stack = ArrayStack()
+for i in range(1,8):
+    stack.push(i)   
+reverse(stack)
+while stack.peek():
+    print(stack.pop())
+
+# 从左上角走到右下角，每一步只能向右或者向下。沿途经过的数字要累加起来。返回最小的路径和
+
