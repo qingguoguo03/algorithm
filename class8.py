@@ -152,4 +152,57 @@ while stack.peek():
     print(stack.pop())
 
 # 从左上角走到右下角，每一步只能向右或者向下。沿途经过的数字要累加起来。返回最小的路径和
+class Solution:
+    def minPathSum(self, grid: 'List[List[int]]') -> 'int':
+        m = len(grid)
+        n = len(grid[0])
+        
+        for i in range(1, m):
+            grid[i][0] += grid[i-1][0]
+        
+        for j in range(1, n):
+            grid[0][j] += grid[0][j-1]
+        
+        for i in range(1, m):
+            for j in range(1, n):
+                grid[i][j] += min(grid[i-1][j], grid[i][j-1])
+        
+        return grid[-1][-1]
+
+
+
+
+# 给定两个数组w和v，两个数组长度相等，w[i]表示第i件商品的 重量，v[i]表示第i件商品的价值。 再给定一个整数bag，要求你挑选商品的重量加起来一定不能超 过bag，返回满足这个条件下，获得的最大价值
+
+# 视频中的两个方法比较简洁，递归与动态规划
+
+# 递归的版本
+
+def knapsack(weights, values,  i, curr_weight, bag):
+    if curr_weight>bag:
+        return -math.inf # 视频这里用的是0 要改成-math.inf 才是对的，表示这条路完全不能用！
+    if i == len(weights):
+        return 0
+    return max(knapsack(weights, values, i+1, curr_weight, bag), knapsack(weights, values, i+1, curr_weight+weights[i], bag)+values[i])
+
+weights=[2,3,5,7]
+values=[1,5,2,4]
+capacity=10
+knapsack(weights, values,  0, 0, capacity)
+
+
+# 还有动态规划版本，分析清楚路径依赖
+
+def knapsack(weights, values, bag):
+    
+    n = len(weights)
+    arr = [[0 for j in range(0,bag+1)] for i in range(0, n+1)]
+    for i in range(n-1, -1, -1):
+        for j in range(bag, -1, -1):
+            arr[i][j] = arr[i+1][j]
+            if j+weights[i]<=bag:
+                arr[i][j] = max(arr[i][j], arr[i+1][j+weights[i]]+values[i])
+    return arr[0][0]
+knapsack(weights, values, capacity)
+
 
