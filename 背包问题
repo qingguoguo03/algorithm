@@ -1,0 +1,43 @@
+# https://www.kancloud.cn/kancloud/pack/70125
+# https://www.cnblogs.com/Christal-R/p/Dynamic_programming.html
+
+# 01背包问题
+# 416. Partition Equal Subset Sum
+
+# 节省空间
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        
+        if not nums:
+            return False
+        aim, yushu = sum(nums)//2, sum(nums) % 2
+        if yushu:
+            return False
+        n = len(nums)
+        arr = [0 for i in range(0, aim+1)]
+        arr[aim] = 0
+        for i in range(n):
+            for v in range(aim, nums[i]-1, -1):
+                arr[v] = max(arr[v],  arr[v-nums[i]]+nums[i])
+           
+        return arr[aim] == aim
+  
+# 不节省空间: 会超时
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        
+        if not nums or len(nums)==1:
+            return False
+        aim, yushu = sum(nums)//2, sum(nums) % 2
+        if yushu:
+            return False
+        n = len(nums)
+        arr = [[False for j in range(0, aim+1)] for i in range(n)]
+        arr[0][0] = True
+        arr[0][nums[0]]=True
+        for i in range(1, n):
+            for v in range(0, aim+1):
+                arr[i][v] = arr[i-1][v]
+                if v-nums[i] >= 0:
+                    arr[i][v] = max(arr[i][v],  arr[i-1][v-nums[i]])
+        return arr[n-1][aim] 
