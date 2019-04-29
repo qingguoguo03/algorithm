@@ -41,3 +41,29 @@ class Solution:
                 if v-nums[i] >= 0:
                     arr[i][v] = max(arr[i][v],  arr[i-1][v-nums[i]])
         return arr[n-1][aim] 
+
+# 递归更快一点
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        if sum(nums)%2==1:
+            return False
+
+        target = sum(nums)//2
+        nums.sort(reverse=True)
+        if nums[0]>target:
+            return False
+
+        used = [0 for _ in range(len(nums))]
+        def canfind(target):
+            if target==0:
+                return True
+            for i in range(len(nums)):
+                if nums[i]<=target and not used[i]:
+                    used[i] = 1
+                    if canfind(target-nums[i]):
+                        return True
+                    used[i] = 0
+            return False  
+
+        return canfind(target)
+        
